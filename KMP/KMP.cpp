@@ -4,7 +4,7 @@
 #include <fstream> 
 #include <sstream>
 #include <set>
-#include <algorithm> // Para std::transform
+#include <algorithm> // Para std::transform //Usamos para marcar a palavra achaa
 #include <cctype>    // Para std::tolower
 
 using namespace std;
@@ -93,7 +93,7 @@ void KMP(string& texto, const string& padrao) {
             j++;
             if (j == m) {
                 cout << "Padrão encontrado na posição " << i - j << endl;
-                addMarcacao(texto, i-j, i);
+                addMarcacao(texto, i-j, i); //Colocamos a sequencia em maiuscula
                 j = tabela[padraoInt[j - 1]][j - 1];
             }
         } else {
@@ -106,7 +106,7 @@ void KMP(string& texto, const string& padrao) {
 
                 if(verifica >= padrao.size()) // se estiver, ele pula pra posicao tabela falha
                     j = tabela[padraoInt[j - 1]][j - 1];
-                else         // se não, 
+                else         // se não, ele volta ao inicio sequencia
                     j = 0;
             } else {
                 i++;
