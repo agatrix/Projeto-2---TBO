@@ -4,60 +4,11 @@
 #include <fstream> 
 #include <sstream>
 #include <set>
+#include <algorithm> // Para std::transform
+#include <cctype>    // Para std::tolower
 
 using namespace std;
 
-// // Função para criar a tabela de prefixo
-// void tabelaPrefixo(const string& padrao, vector<int>& lps) {
-//     int length = 0;
-//     lps[0] = 0; // lps[0] é sempre 0
-//     int i = 1;
-
-//     while (i < padrao.size()) {
-//         if (padrao[i] == padrao[length]) {
-//             length++;
-//             lps[i] = length;
-//             i++;
-//         } else {
-//             if (length != 0) {
-//                 length = lps[length - 1];
-//             } else {
-//                 lps[i] = 0;
-//                 i++;
-//             }
-//         }
-//     }
-// }
-
-// // Função para realizar a busca KMP
-// void procurarKMP(const string& text, const string& padrao) {
-//     int n = text.size();
-//     int m = padrao.size();
-
-//     vector<int> lps(m); // Vetor de lps
-//     tabelaPrefixo(padrao, lps);
-
-//     int i = 0; // índice que acompanha o texto
-//     int j = 0; // índice que acompanha o padrao
-
-//     while (i < n) {
-//         if (padrao[j] == text[i]) {
-//             i++;
-//             j++;
-//         }
-
-//         if (j == m) {
-//             cout << "Padrão encontrado no índice " << i - j << endl;
-//             j = lps[j - 1];
-//         } else if (i < n && padrao[j] != text[i]) {
-//             if (j != 0) {
-//                 j = lps[j - 1];
-//             } else {
-//                 i++;
-//             }
-//         }
-//     }
-// }
 vector<int> mapearPadrao(const string& sequencia) {
     vector<int> resultado;
     string caracteresVistos;
@@ -77,21 +28,31 @@ vector<int> mapearPadrao(const string& sequencia) {
     return resultado;
 }
 
-void failureFunction(const string& padrao){
+void transformarMinusculo(string &texto){
+// Converte todos os caracteres para minúsculas
+    transform(texto.begin(), texto.end(), texto.begin(), ::tolower);
+}
+
+void addMarcacao(string &texto, const int inicio, const int fim){
+    for(int i = inicio; i < fim; i++){
+        texto[i] = toupper(texto[i]);
+    }
+}
+
+void failureFunction(const string& padrao, vector<vector<int>>& tabela) {
     vector<int> padraoInt = mapearPadrao(padrao);
 
     set<char> caracteresUnicos;
+    int verifica = 1;
     for (char c : padrao) {
-        if (c != ' ') { // Ignorar espaços
-            caracteresUnicos.insert(c);
-        }
+        caracteresUnicos.insert(c);
     }
 
-    int tabela[caracteresUnicos.size()][padrao.size()];
-
-    for(int i=0; i<=caracteresUnicos.size()-1;i++){
-        tabela[i][0] = 0;
-    }
+    // Inicializar a tabela de falhas
+    tabela.resize(caracteresUnicos.size(),
+                    vector<int>(padrao.size(), 0));
+    /*Essa tabela é inicida com a quantidade de
+    linhas igual caracteresUnicos.size e colunas padrao.size, tudo em 0*/
 
     tabela[padraoInt[0]][0] = 1; 
     int x = 0; //esse x marca onde devemos voltar caso erre a sequencia
@@ -99,28 +60,74 @@ void failureFunction(const string& padrao){
         for(int j = 0; j<caracteresUnicos.size();j++){
             tabela[j][i] = tabela[j][x];
         }
-        tabela[padraoInt[i]][i]=i+1;
-        x = tabela[padraoInt[i]][x];
+        if(i+1 == padrao.size()){
+            tabela[padraoInt[i]][i] = x;
+        }else{
+            tabela[padraoInt[i]][i]=i+1;
+            x = tabela[padraoInt[i]][x];       
+        }
     }
 
-    for(int i = 0; i<=caracteresUnicos.size()-1;i++){
-        for(int j = 0; j<=padrao.size()-1;j++){
+    for(int i = 0; i<caracteresUnicos.size();i++){
+        for(int j = 0; j<padrao.size();j++){
             cout << tabela[i][j] << " ";
         }
         cout << endl;
     }
 }
 
+void KMP(string& texto, const string& padrao) {
+    int m = padrao.size();
 
+    vector<vector<int>> tabela;
+    failureFunction(padrao, tabela);
+    vector<int> padraoInt = mapearPadrao(padrao);
+    int i = 0;  // Índice para o texto
+    int j = 0;  // Índice para o padrão
+    
+
+    while (i < texto.size()) {
+        int verifica = 0;
+        if (texto[i] == padrao[j]) {
+            i++;
+            j++;
+            if (j == m) {
+                cout << "Padrão encontrado na posição " << i - j << endl;
+                addMarcacao(texto, i-j, i);
+                j = tabela[padraoInt[j - 1]][j - 1];
+            }
+        } else {
+            if (j > 0) {
+                for(int z = 0; z < padrao.size();z++){ //Verifica se a letra atual esta no parao
+                    if(padrao[z] == texto[i]){
+                        verifica += 1;
+                    }
+                }
+
+                if(verifica >= padrao.size()) // se estiver, ele pula pra posicao tabela falha
+                    j = tabela[padraoInt[j - 1]][j - 1];
+                else         // se não, 
+                    j = 0;
+            } else {
+                i++;
+            }
+        }
+    }
+}
 
 int main() {
     ifstream texto("texto.txt"); //abrimos o arquivo de texto
     stringstream buff;
     buff << texto.rdbuf();       //Colocamos o texto todo em uma string
     string textoStr = buff.str();
+    string padrao = "idade"; //Padrão que o usuario está procurando
 
-    string padrao = "ababac"; //Padrão que o usuario está procurando
-    failureFunction(padrao);
+    transformarMinusculo(textoStr);
+    transformarMinusculo(padrao);
+
+    KMP(textoStr,padrao);
+
+    cout << endl << textoStr;
 
     return 0;
 }
