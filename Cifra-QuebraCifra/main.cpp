@@ -24,7 +24,7 @@ string ciptrografarTexto(string& texto,string& chave){
         if(isalpha(c)){/*Se c for um caracter do alfabeto*/
             bool eMaiusculo = isupper(c);
             char letraMaiuscula = toupper(c);/*converte a letra para maiuscula pois nossa chave é contem letras maiusculas*/
-            int index = alfabeto.find(letraMaiuscula);/*incex da letra no alfabeto para ser alterada a letra correspndente na chave*/
+            int index = alfabeto.find(letraMaiuscula);/*index da letra no alfabeto para ser alterada a letra correspndente na chave*/
             char letraCriptografada = chave[index];/*criptografa a letra com base no index dela na chave*/
 
             if(!eMaiusculo){/*Caso a letra original não seja maiuscula*/
@@ -49,8 +49,8 @@ int main (){
     cout << "Chave Criptografada: " << chave << endl;
 
     cout<< "texto: ";
-    cin >> texto;
-
+    getline(cin,texto);
+    /* cout << texto << endl; */
     string textoCriptografado = ciptrografarTexto(texto,chave);
 
     cout<< "texto criptografado:"<<endl;
