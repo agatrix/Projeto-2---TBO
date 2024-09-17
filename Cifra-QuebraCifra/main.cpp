@@ -10,18 +10,17 @@
 using namespace std;
 
 const string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-// Vetor para armazenar as letras em minúsculas
-    std::vector<char> letrasEsperadas = {
-        'e', 'a', 'r', 'i', 'o', 't', 'n', 's', 'l', 'c',
-        'u', 'd', 'p', 'm', 'h', 'g', 'b', 'f', 'y', 'w',
-        'k', 'v', 'x', 'z', 'j', 'q'
+std::vector<char> letrasEsperadas = {
+        'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 
+        'l', 'u', 'c', 'm', 'f', 'w', 'g', 'y', 'p', 'b', 
+        'v', 'k', 'j', 'x', 'q', 'z'
     };
-    
-    // Vetor para armazenar as frequências correspondentes
+
     std::vector<double> frequenciaEsperada = {
-        11.1607, 8.4966, 7.5809, 7.5448, 7.1635, 6.9509, 6.6544, 5.7351, 5.4893, 4.5388,
-        3.6308, 3.3844, 3.1671, 3.0129, 3.0034, 2.4705, 2.0720, 1.8121, 1.7779, 1.2899,
-        1.1016, 1.0074, 0.2902, 0.2722, 0.1965, 0.1962
+        12.702, 9.056, 8.167, 7.507, 6.966, 6.749, 6.327, 
+        6.094, 5.987, 4.253, 4.025, 2.782, 2.758, 2.406, 
+        2.360, 2.228, 2.015, 1.974, 1.929, 1.492, 0.978, 
+        0.772, 0.153, 0.150, 0.095, 0.074
     };
 
 
@@ -144,24 +143,21 @@ string descriptografarTexto(const string& textoCriptografado,vector<char>& letra
         }
     }
 
-    for ( auto x : frequenciasCriptografadas){
-        cout << x << endl;
-    }
     for ( auto x : letrasCriptografadas){
         cout << x;
     }
-    cout << endl << "------"  <<endl;
-    for ( auto x : frequencias){
-        cout << x << endl;
-    }
+
     // Cria um vetor de substituição com base nas frequências esperadas
     vector<char> substituicoes(letrasCriptografadas.size());
     for (size_t i = 0; i < letrasCriptografadas.size(); ++i) {
         substituicoes[i] = letrasEsperadas[i];
     }
-    cout << "------"  <<endl;
+    cout << endl;
     for ( auto x : substituicoes){
         cout << x;
+    }
+    for(int i = 0 ; i< 26 ; i++){
+        cout << frequenciaEsperada[i] << " : " << frequenciasCriptografadas[i] << endl;
     }
     // Substitui as letras no texto criptografado
     string textoCOrreto = substituirTexto(textoCriptografado, letrasCriptografadas, substituicoes);
@@ -176,14 +172,21 @@ int main (){
     locale::global(locale("pt_BR.UTF-8"));
     string chave = gerarChave();
     lerDicionario();
-    cout << "Chave Criptografada: " << chave << endl;
+    cout << "ABCDEFGHIJKLMNOPQRSTUVWXyZ" << endl;
+    cout << chave << endl;
 
     ifstream texto("texto1.txt"); //abrimos o arquivo de texto
     stringstream buff;
     buff << texto.rdbuf();       //Colocamos o texto todo em uma string
     string textoStr = buff.str();
-
     string textoCriptografado = ciptrografarTexto(textoStr,chave);
+
+    std::ofstream arquivo("saida.txt");  // Abre o arquivo de saída
+    
+    if (arquivo.is_open()) {  // Verifica se o arquivo foi aberto corretamente
+        arquivo << textoCriptografado;  // Escreve a string no arquivo
+        arquivo.close();  // Fecha o arquivo
+    }
 
     //cout<< "texto criptografado:"<<endl;
     //cout << textoCriptografado << endl;
@@ -191,7 +194,7 @@ int main (){
     transformarMinusculo(textoCriptografado);
 
     string textD = descriptografarTexto(textoCriptografado,letrasEsperadas,frequenciaEsperada);
-    cout<< "texto descriptografado:"<<endl;
-    //cout << textoCriptografado << endl;
+    // cout<< "texto descriptografado:"<<endl;
+    //cout << textD << endl;
 
 }
