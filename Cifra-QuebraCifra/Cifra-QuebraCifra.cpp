@@ -32,29 +32,6 @@ string gerarChave(){
     return chave;
 }
 
-void lerDicionario() {
-
-    // Abrir o arquivo para leitura
-    ifstream file("pt_BR.dic");
-
-    // Verificar se o arquivo foi aberto com sucesso
-    if (!file.is_open()) {
-        cerr << "Erro ao abrir o arquivo!" << endl;
-        return;
-    }
-
-    vector<string> dictionary;
-
-    string line;
-    while (getline(file, line)) {
-        // Adicionar cada linha (palavra) ao conjunto
-        dictionary.push_back(line);
-    }
-
-    // Fechar o arquivo
-    file.close();
-}
-
 void transformarMinusculo(string &texto){
 // Converte todos os caracteres para minúsculas
     transform(texto.begin(), texto.end(), texto.begin(), ::tolower);
@@ -171,7 +148,6 @@ int main (){
 
     locale::global(locale("pt_BR.UTF-8"));
     string chave = gerarChave();
-    lerDicionario();
     cout << "ABCDEFGHIJKLMNOPQRSTUVWXyZ" << endl;
     cout << chave << endl;
 
@@ -183,18 +159,16 @@ int main (){
 
     std::ofstream arquivo("saida.txt");  // Abre o arquivo de saída
     
-    if (arquivo.is_open()) {  // Verifica se o arquivo foi aberto corretamente
-        arquivo << textoCriptografado;  // Escreve a string no arquivo
-        arquivo.close();  // Fecha o arquivo
+    if (arquivo.is_open()) {  
+        arquivo << textoCriptografado;  // Escreve o TextoCrip no arquivo
+        arquivo.close();  
     }
 
-    //cout<< "texto criptografado:"<<endl;
-    //cout << textoCriptografado << endl;
 
     transformarMinusculo(textoCriptografado);
 
     string textD = descriptografarTexto(textoCriptografado,letrasEsperadas,frequenciaEsperada);
-    // cout<< "texto descriptografado:"<<endl;
-    //cout << textD << endl;
+    cout<< "texto descriptografado:"<<endl;
+    cout << textD << endl;
 
 }
