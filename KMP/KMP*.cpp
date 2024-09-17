@@ -84,11 +84,10 @@ void KMP(string& texto, const string& padrao) {
     vector<int> padraoInt = mapearPadrao(padrao);
     int i = 0;  // Índice para o texto
     int j = 0;  // Índice para o padrão
-    
 
     while (i < texto.size()) {
         bool verifica = false;
-        if (texto[i] == padrao[j]) {
+        if (texto[i] == padrao[j] || '*' == padrao[j]) {
             i++;
             j++;
             if (j == m) {
@@ -122,7 +121,7 @@ int main() {
     stringstream buff;
     buff << texto.rdbuf();       //Colocamos o texto todo em uma string
     string textoStr = buff.str();
-    string padrao = "idade"; //Padrão que o usuario está procurando
+    string padrao = "v*z*s"; //Padrão que o usuario está procurando
 
     transformarMinusculo(textoStr);
     transformarMinusculo(padrao);
