@@ -4,7 +4,6 @@
 #include <ctime>      // Para time
 #include <vector>
 #include <fstream>
-#include <locale>
 #include <sstream>
 
 using namespace std;
@@ -82,25 +81,6 @@ void calcularFrequencia(const string& texto, vector<char>& letras, vector<double
     }
 }
 
-// Função para substituir as letras no texto criptografado
-string substituirTexto(const string& texto, const vector<char>& original, const vector<char>& substituto) {
-    string resultado = texto;
-
-    // Para cada letra no texto, substitui conforme o mapeamento
-    for (size_t i = 0; i < texto.size(); ++i) {
-        for (size_t j = 0; j < original.size(); ++j) {  
-            if(isalpha(texto[i])){
-                if (texto[i] == original[j]) {
-                    resultado[i] = substituto[j];
-                    break;
-                }
-            }
-        }
-    }
-
-    return resultado;
-}
-
 string descriptografarTexto(const string& textoCriptografado,vector<char>& letrasEsperadas, vector<double>& frequencias){
 
    // Vetores para armazenar as letras criptografadas e suas frequências
@@ -124,29 +104,34 @@ string descriptografarTexto(const string& textoCriptografado,vector<char>& letra
         cout << x;
     }
 
-    // Cria um vetor de substituição com base nas frequências esperadas
-    vector<char> substituicoes(letrasCriptografadas.size());
-    for (size_t i = 0; i < letrasCriptografadas.size(); ++i) {
-        substituicoes[i] = letrasEsperadas[i];
-    }
     cout << endl;
-    for ( auto x : substituicoes){
-        cout << x;
-    }
+
     for(int i = 0 ; i< 26 ; i++){
         cout << frequenciaEsperada[i] << " : " << frequenciasCriptografadas[i] << endl;
     }
     // Substitui as letras no texto criptografado
-    string textoCOrreto = substituirTexto(textoCriptografado, letrasCriptografadas, substituicoes);
-    return textoCOrreto;
+    //string textoCOrreto = substituirTexto(textoCriptografado, letrasCriptografadas, substituicoes);
+    string textoCorreto;
+    for(char c: textoCriptografado){
+        if(isalpha(c)){/*Se c for um caracter do alfabeto*/
+            for(int i = 0; i<26; i++){
+                if(letrasCriptografadas[i] == c){
+                    textoCorreto += letrasEsperadas[i];/*adciona a letra ao texto*/
+                    break;
+                }
+                
+            }
+        }else{/*Se c não for um valor alfabetico*/
+            textoCorreto += c;/*adicona o caracter ao texto criptografado*/
+        }
+    }
 
-    
+    return textoCorreto;   
 
 }
 
 int main (){
 
-    locale::global(locale("pt_BR.UTF-8"));
     string chave = gerarChave();
     cout << "ABCDEFGHIJKLMNOPQRSTUVWXyZ" << endl;
     cout << chave << endl;
